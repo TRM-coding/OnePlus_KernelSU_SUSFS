@@ -364,7 +364,7 @@ runs:
         for base in "$KP/prebuilts" "$KP/prebuilts-master"; do
           [ -d "$base/rust/linux-x86/" ] || continue
           ls -la "$base/rust/linux-x86/"
-          latest=$(ls -d "$base/rust/linux-x86/1."* 2>/dev/null | sort -V | tail -n1 || true)
+          latest=$(ls -d "$base/rust/linux-x86/1."* 2>/dev/null | sort -V | head -n1 || true)
           if [ -n "$latest" ] && [ -x "$latest/bin/rustc" ]; then
             RUSTC_BIN="$latest/bin"
             RUSTC_FOUND=true
@@ -956,18 +956,18 @@ runs:
         EOF
         echo "::endgroup::"
 
-    - name: Disable RUST
-      shell: bash
-      run: |
-        set -euo pipefail
-        echo "::group::Disable RUST"
-        cd "$CONFIG/kernel_platform"
-        cat >> common/arch/arm64/configs/gki_defconfig <<EOF
-        # CONFIG_RUST is not set
-        # CONFIG_ANDROID_BINDER_IPC_RUST is not set
-        CONFIG_ANDROID_BINDER_IPC=y
-        EOF
-        echo "::endgroup::"
+    # - name: Disable RUST
+      # shell: bash
+      # run: |
+        # set -euo pipefail
+        # echo "::group::Disable RUST"
+        # cd "$CONFIG/kernel_platform"
+        # cat >> common/arch/arm64/configs/gki_defconfig <<EOF
+        # # CONFIG_RUST is not set
+        # # CONFIG_ANDROID_BINDER_IPC_RUST is not set
+        # CONFIG_ANDROID_BINDER_IPC=y
+        # EOF
+        # echo "::endgroup::"
 
     - name: Add Build based configs
       shell: bash
@@ -1151,7 +1151,7 @@ runs:
         
         export LLVM=1 LLVM_IAS=1
         export ARCH=arm64 SUBARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
+        export CROSS_COMPILE=aarch64-linux-android13-
         export PAHOLE="$KERNEL_PATH/prebuilts/kernel-build-tools/linux-x86/bin/pahole"
         export LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm 
         export OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip
