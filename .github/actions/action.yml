@@ -225,11 +225,13 @@ runs:
       with:
         toolchain: "1.82.0"
 
-      - name: Show Rust version
-        run: rustc -V
+    - name: Show Rust version
+      shell: bash
+      run: rustc -V
 
-      - name: Install bindgen if you ever need it
-        run: cargo install bindgen-cli
+    - name: Install bindgen if you ever need it
+      shell: bash
+      run: cargo install bindgen-cli
 
     - name: Setup Base Environment
       shell: bash
@@ -1046,7 +1048,7 @@ runs:
           EOF
         fi
         
-        sed -i -E 's/\$\(CONFIG_ANDROID_BINDER_IPC_RUST\)/m/g' common/drivers/android/Makefile
+        # sed -i -E 's/\$\(CONFIG_ANDROID_BINDER_IPC_RUST\)/m/g' common/drivers/android/Makefile
         echo "::endgroup::"
 
     # - name: Run sed and perl Commands
