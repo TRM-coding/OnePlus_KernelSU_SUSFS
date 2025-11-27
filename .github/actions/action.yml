@@ -1048,7 +1048,7 @@ runs:
         EOF
         fi
         
-        sed -i -E 's/\$\(CONFIG_ANDROID_BINDER_IPC_RUST\)/m/g' common/drivers/android/Makefile
+        # sed -i -E 's/\$\(CONFIG_ANDROID_BINDER_IPC_RUST\)/m/g' common/drivers/android/Makefile
         echo "::endgroup::"
 
     # - name: Run sed and perl Commands
