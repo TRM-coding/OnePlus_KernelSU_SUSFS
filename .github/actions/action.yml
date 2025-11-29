@@ -1392,6 +1392,12 @@ runs:
         OUT="$COMMON/out"
         IMG="$OUT/arch/arm64/boot/Image"
         
+        if [ -f "$KERNEL_PATH/out/$OP_ANDROID_VERSION-$OP_KERNEL_VERSION/dist/Image" ]; then
+          IMG="$KERNEL_PATH/out/$OP_ANDROID_VERSION-$OP_KERNEL_VERSION/dist/Image"
+        elif [ -f "$KERNEL_PATH/bazel-bin/common/kernel_aarch64/Image" ]; then
+          IMG="$KERNEL_PATH/bazel-bin/common/kernel_aarch64/Image"
+        fi
+        
         if [ -f "$COMMON/build.log" ]; then
           WARNINGS_COUNT="$(grep -ciE '\bwarning:' "$COMMON/build.log" || true)"
           [ -n "$WARNINGS_COUNT" ] || WARNINGS_COUNT="0"
@@ -1441,8 +1447,15 @@ runs:
         set -euo pipefail
         echo "::group::Create kernel ZIP package"
         
+        KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG/kernel_platform"
         CONFIG_DIR="$GITHUB_WORKSPACE/$CONFIG"
         IMAGE_PATH="$CONFIG_DIR/kernel_platform/common/out/arch/arm64/boot/Image"
+        
+        if [ -f "$KERNEL_PATH/out/$OP_ANDROID_VERSION-$OP_KERNEL_VERSION/dist/Image" ]; then
+          IMAGE_PATH="$KERNEL_PATH/out/$OP_ANDROID_VERSION-$OP_KERNEL_VERSION/dist/Image"
+        elif [ -f "$KERNEL_PATH/bazel-bin/common/kernel_aarch64/Image" ]; then
+          IMAGE_PATH="$KERNEL_PATH/bazel-bin/common/kernel_aarch64/Image"
+        fi
         
         if [ ! -f "$IMAGE_PATH" ]; then
           echo "::error::Built Image not found at: $IMAGE_PATH"
