@@ -621,6 +621,7 @@ runs:
         cd "$CONFIG/kernel_platform"
         rm -f common/android/abi_gki_protected_exports_* || true
         rm -f msm-kernel/android/abi_gki_protected_exports_* || true
+        sed -i 's/protected_modules = \[.*\]/protected_modules = []/' common/modules.bzl
         df -h
 
     # - name: Add BBG
@@ -1094,54 +1095,54 @@ runs:
         # DATESTR=$(date -u)
         # # perl -pi -e 's{UTS_VERSION="\$\(echo \$UTS_VERSION \$CONFIG_FLAGS \$TIMESTAMP \| cut -b -\$UTS_LEN\)"}{UTS_VERSION="#1 SMP PREEMPT $DATESTR"}' ./common/scripts/mkcompile_h
 
-    # - name: Build the Kernel
-      # shell: bash
-      # run: |
-        # echo "Changing to configuration directory: $CONFIG..."
-        # cd "$CONFIG"
+    - name: Build the Kernel
+      shell: bash
+      run: |
+        echo "Changing to configuration directory: $CONFIG..."
+        cd "$CONFIG"
         
-        # echo "Building the kernel..."
-        # # Clear Cache
-        # sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'
+        echo "Building the kernel..."
+        # Clear Cache
+        sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'
         
-        # # rm ./kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
+        # rm ./kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
         
-        # BUILD_TYPE="gki"
-        # BAZEL_ARGS=(--jobs=$(nproc --all))
-        # if [[ "$OP_SOC" == "sun" || "$OP_SOC" == "canoe" ]]; then
-          # BUILD_TYPE="perf"
-          # # BAZEL_ARGS+=(-g)
-        # fi
+        BUILD_TYPE="gki"
+        BAZEL_ARGS=(--jobs=$(nproc --all))
+        if [[ "$OP_SOC" == "sun" || "$OP_SOC" == "canoe" ]]; then
+          BUILD_TYPE="perf"
+          # BAZEL_ARGS+=(-g)
+        fi
         
-        # (stdbuf -oL bash -c '
-          # while true; do
-            # echo "=== $(date) ==="
-            # free -h
-            # echo "======"
-            # df -h
-            # echo "======"
-            # top -b -n 1 | head -n 15
-            # echo ""
-            # sleep 60
-          # done
-        # ') &
-        # MONITOR_PID=$!
-        # trap "kill $MONITOR_PID" EXIT
+        (stdbuf -oL bash -c '
+          while true; do
+            echo "=== $(date) ==="
+            free -h
+            echo "======"
+            df -h
+            echo "======"
+            top -b -n 1 | head -n 15
+            echo ""
+            sleep 60
+          done
+        ') &
+        MONITOR_PID=$!
+        trap "kill $MONITOR_PID" EXIT
         
-        # KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG/kernel_platform"
-        # BASE_PATH="/usr/lib/ccache:${CLANG_BIN_PATH}:${KERNEL_PATH}/prebuilts/kernel-build-tools/linux-x86/bin/:${KERNEL_PATH}/prebuilts/kernel-build-tools/linux_musl-x86/bin/"
-        # export PATH="${BASE_PATH}:${PATH}"
+        KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG/kernel_platform"
+        BASE_PATH="/usr/lib/ccache:${CLANG_BIN_PATH}:${KERNEL_PATH}/prebuilts/kernel-build-tools/linux-x86/bin/:${KERNEL_PATH}/prebuilts/kernel-build-tools/linux_musl-x86/bin/"
+        export PATH="${BASE_PATH}:${PATH}"
         
-        # BUILD_START=$(date +%s)
-        # cd kernel_platform
-        # ./tools/bazel build --config=fast --config=stamp --lto=thin //common:kernel_aarch64_dist --verbose_failures --sandbox_debug || exit 1
+        BUILD_START=$(date +%s)
+        cd kernel_platform
+        ./tools/bazel build --config=fast --config=stamp --lto=none //common:kernel_aarch64_dist --verbose_failures --sandbox_debug || exit 1
         
-        # BUILD_END=$(date +%s)
-        # BUILD_TIME=$((BUILD_END - BUILD_START))
+        BUILD_END=$(date +%s)
+        BUILD_TIME=$((BUILD_END - BUILD_START))
         
-        # echo "BUILD_START=$BUILD_START" >> "$GITHUB_ENV"
-        # echo "BUILD_END=$BUILD_END" >> "$GITHUB_ENV"
-        # echo "BUILD_TIME=$BUILD_TIME" >> "$GITHUB_ENV"
+        echo "BUILD_START=$BUILD_START" >> "$GITHUB_ENV"
+        echo "BUILD_END=$BUILD_END" >> "$GITHUB_ENV"
+        echo "BUILD_TIME=$BUILD_TIME" >> "$GITHUB_ENV"
 
     - name: Build Kernel
       shell: bash
