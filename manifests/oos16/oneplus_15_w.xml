@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
   <remote fetch="https://git.codelinaro.org/clo/la" name="clo-la"/>
-  <remote fetch="https://github.com/OnePlusOSS" name="origin"/>
+  <remote fetch="https://github.com/TRM-coding" name="origin"/>
   
   <remote fetch="https://android.googlesource.com" name="aosp"/>
   <default revision="main-kernel-2025" remote="aosp" sync-j="4" />
